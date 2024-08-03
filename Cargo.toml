@@ -1,0 +1,12 @@
+[package]
+name = "rquickjs-moduledef-ext"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rquickjs = { git = "https://github.com/DelSkayn/rquickjs", features = [
+  "full-async",
+  "parallel",
+  "macro",
+] }
+tokio = { version = "1", features = ["full"] }
