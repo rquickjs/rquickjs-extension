@@ -35,22 +35,36 @@ impl Loader for ModuleLoader {
     }
 }
 
+type GlobalFn = for<'js> fn(ctx: Ctx<'js>) -> Result<()>;
+
+fn global_func<'js, D: ModuleDefExt>(ctx: Ctx<'js>) -> Result<()> {
+    let globals = ctx.globals();
+    let options = ctx
+        .userdata::<D::Options<'js>>()
+        .ok_or(rquickjs::Exception::throw_message(
+            &ctx,
+            &format!("Module {} options not found", D::NAME),
+        ))?;
+    D::globals(&options, &globals)
+}
+
 #[derive(Debug, Default)]
 pub struct ModuleLoaderBuilder {
     definitions: HashMap<&'static str, LoadFn>,
-    //instances: HashMap<&'static str, Box<dyn ModuleDefExt>>,
-    globals: HashMap<&'static str, bool>,
+    globals: HashMap<&'static str, GlobalFn>,
 }
 
 impl ModuleLoaderBuilder {
     pub async fn add_module<M: ModuleDefExt>(&mut self, module: M, global: bool) -> &mut Self {
         self.definitions.insert(M::NAME, load_func::<M>);
-        //self.instances.insert(M::NAME, Box::new(module));
-        self.globals.insert(M::NAME, global);
+        if global {
+            self.globals.insert(M::NAME, global_func::<M>);
+        }
+        // Store the options
         self
     }
 
-    pub async fn build(&mut self, ctx: &AsyncContext) -> Result<ModuleLoader> {
+    pub async fn build(&mut self) -> Result<ModuleLoader> {
         // ctx.with(|ctx| {
         //     let globals = ctx.globals();
 

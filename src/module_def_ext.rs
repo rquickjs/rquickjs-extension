@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use rquickjs::{
     module::{Declarations, Exports, ModuleDef},
     runtime::UserData,
@@ -9,10 +11,7 @@ pub trait ModuleDefExt: ModuleDef {
 
     type Options<'js>: UserData<'js>;
 
-    fn declare(decl: &Declarations<'_>) -> Result<()>
-    where
-        Self: Sized,
-    {
+    fn declare(decl: &Declarations<'_>) -> Result<()> {
         let _ = decl;
         Ok(())
     }
@@ -21,15 +20,12 @@ pub trait ModuleDefExt: ModuleDef {
         options: &Self::Options<'js>,
         ctx: &Ctx<'js>,
         exports: &Exports<'js>,
-    ) -> Result<()>
-    where
-        Self: Sized,
-    {
+    ) -> Result<()> {
         let _ = (options, exports, ctx);
         Ok(())
     }
 
-    fn globals<'js>(&self, globals: &Object<'js>) -> Result<()> {
+    fn globals<'js>(options: &Self::Options<'js>, globals: &Object<'js>) -> Result<()> {
         let _ = (globals);
         Ok(())
     }

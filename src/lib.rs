@@ -87,10 +87,10 @@ mod tests {
             Ok(())
         }
 
-        fn globals<'js>(&self, globals: &Object<'js>) -> Result<()> {
+        fn globals<'js>(options: &Self::Options<'js>, globals: &Object<'js>) -> Result<()> {
             globals.set(
                 "console",
-                Console::new(self.options.target.clone(), self.options.newline),
+                Console::new(options.target.clone(), options.newline),
             )?;
             Ok(())
         }
