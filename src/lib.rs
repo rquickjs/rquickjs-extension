@@ -1,8 +1,10 @@
-pub use module_def_ext::ModuleDefExt;
-pub use module_loader::{ModuleLoader, ModuleLoaderBuilder};
+pub use definition::{GlobalsOnly, ModuleDefExt, ModuleImpl};
+pub use loader::{ModuleLoader, ModuleLoaderBuilder};
 
-mod module_def_ext;
-mod module_loader;
+mod definition;
+mod loader;
+mod macros;
+mod wrapper;
 
 #[cfg(test)]
 mod tests {
@@ -13,9 +15,8 @@ mod tests {
     };
 
     use crate::{
-        globals_only_module,
-        module_def_ext::{GlobalsOnly, ModuleImpl},
-        ModuleLoader,
+        definition::{GlobalsOnly, ModuleImpl},
+        globals_only_module, ModuleLoader,
     };
 
     use super::ModuleDefExt;
@@ -143,9 +144,9 @@ mod tests {
             opts.global = false;
 
             if let Err(err) = ctx.eval_with_options::<Value,_>(r#"
-            
+
             import console from "console";
-            
+
             "#, opts).catch(&ctx){
                 eprintln!("{:?}", err);
             }

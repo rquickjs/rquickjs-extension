@@ -6,7 +6,8 @@ use rquickjs::{
     Ctx, Error, JsLifetime, Object, Result,
 };
 
-use crate::module_def_ext::{AsModule, HasModule, ModuleDefExt};
+use crate::definition::ModuleDefExt;
+use crate::wrapper::{AsModule, HasModule};
 
 type LoadFn = for<'js> fn(Ctx<'js>, Vec<u8>) -> Result<Module<'js>>;
 
