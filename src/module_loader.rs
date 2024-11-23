@@ -3,14 +3,14 @@ use std::collections::HashMap;
 use rquickjs::{
     loader::Loader,
     module::{Module, ModuleDef},
-    AsyncContext, Ctx, Error, Result,
+    Ctx, Error, JsLifetime, Object, Result,
 };
 
-use crate::ModuleDefExt;
+use crate::module_def_ext::{AsModule, HasModule, ModuleDefExt};
 
 type LoadFn = for<'js> fn(Ctx<'js>, Vec<u8>) -> Result<Module<'js>>;
 
-fn load_func<'js, D: ModuleDef>(ctx: Ctx<'js>, name: Vec<u8>) -> Result<Module<'js>> {
+fn load_func<D: ModuleDef>(ctx: Ctx<'_>, name: Vec<u8>) -> Result<Module<'_>> {
     Module::declare_def::<D, _>(ctx, name)
 }
 
@@ -35,53 +35,68 @@ impl Loader for ModuleLoader {
     }
 }
 
-type GlobalFn = for<'js> fn(ctx: Ctx<'js>) -> Result<()>;
-
-fn global_func<'js, D: ModuleDefExt>(ctx: Ctx<'js>) -> Result<()> {
-    let globals = ctx.globals();
-    let options = ctx
-        .userdata::<D::Options<'js>>()
-        .ok_or(rquickjs::Exception::throw_message(
-            &ctx,
-            &format!("Module {} options not found", D::NAME),
-        ))?;
-    D::globals(&options, &globals)
-}
-
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct ModuleLoaderBuilder {
-    definitions: HashMap<&'static str, LoadFn>,
-    globals: HashMap<&'static str, GlobalFn>,
+    modules: HashMap<&'static str, LoadFn>,
+    globals: Vec<Box<dyn for<'js> FnOnce(&Ctx<'js>, &Object<'js>) -> Result<()>>>,
 }
 
 impl ModuleLoaderBuilder {
-    pub async fn add_module<M: ModuleDefExt>(&mut self, module: M, global: bool) -> &mut Self {
-        self.definitions.insert(M::NAME, load_func::<M>);
-        if global {
-            self.globals.insert(M::NAME, global_func::<M>);
+    pub fn add_module<O, M, R>(&mut self, module: M) -> &mut Self
+    where
+        for<'js> O: JsLifetime<'js> + 'static,
+        R: ModuleDef + HasModule,
+        M: AsModule<O, R>,
+    {
+        let name = R::name();
+        let m = module.as_module();
+        let o = module.options();
+
+        // Create a new closure that explicitly captures 'js lifetime
+        let globals_fn = move |ctx: &Ctx<'_>, globals: &Object<'_>| {
+            let globals_fn = M::globals;
+            globals_fn(globals, &o)?;
+            let _ = ctx.store_userdata(o);
+            Ok(())
+        };
+
+        // Box the closure with explicit lifetime bounds
+        let boxed_globals: Box<dyn for<'js> FnOnce(&Ctx<'js>, &Object<'js>) -> Result<()>> =
+            Box::new(globals_fn);
+
+        if R::is_module() {
+            self.insert_module(name, m);
         }
-        // Store the options
+
+        self.globals.push(boxed_globals);
         self
     }
 
-    pub async fn build(&mut self) -> Result<ModuleLoader> {
-        // ctx.with(|ctx| {
-        //     let globals = ctx.globals();
+    fn insert_module<M: ModuleDef>(&mut self, name: &'static str, _module: M) -> &mut Self {
+        self.modules.insert(name, load_func::<M>);
+        self
+    }
 
-        //     for (name, global) in self.globals {
-        //         if global {
-        //             let module = self
-        //                 .globals
-        //                 .get(name)
-        //                 .expect("Module should be instanciated");
-        //             module.globals(globals)?;
-        //         }
-        //     }
-        // });
+    pub fn build(self) -> (ModuleLoader, GlobalInitializer) {
+        let globals = self.globals;
+        let modules = self.modules;
+        (ModuleLoader { modules }, GlobalInitializer { globals })
+    }
+}
 
-        // Ok(ModuleLoader {
-        //     modules: self.definitions,
-        // })
-        todo!()
+pub struct GlobalInitializer {
+    globals: Vec<Box<dyn for<'js> FnOnce(&Ctx<'js>, &Object<'js>) -> Result<()>>>,
+}
+
+unsafe impl Send for GlobalInitializer {}
+unsafe impl Sync for GlobalInitializer {}
+
+impl GlobalInitializer {
+    pub fn init(self, ctx: &Ctx) -> Result<()> {
+        let globals_obj = ctx.globals();
+        for globals_fn in self.globals {
+            globals_fn(ctx, &globals_obj)?;
+        }
+        Ok(())
     }
 }

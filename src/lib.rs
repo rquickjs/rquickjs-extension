@@ -6,17 +6,40 @@ mod module_loader;
 
 #[cfg(test)]
 mod tests {
+
     use rquickjs::{
-        class::Trace,
-        function::Constructor,
-        module::{self, Declarations, Exports, ModuleDef},
-        runtime::UserData,
-        AsyncContext, AsyncRuntime, Ctx, Error, Object, Result, Value,
+        async_with, class::Trace, context::EvalOptions, loader::BuiltinResolver, AsyncContext,
+        AsyncRuntime, CatchResultExt, JsLifetime, Object, Result, Value,
     };
 
-    use super::{module_def, ModuleDefExt};
+    use crate::{
+        globals_only_module,
+        module_def_ext::{GlobalsOnly, ModuleImpl},
+        ModuleLoader,
+    };
 
-    #[derive(Clone, Trace)]
+    use super::ModuleDefExt;
+
+    struct Example;
+    impl ModuleDefExt for Example {
+        type Implementation = GlobalsOnly;
+
+        fn implementation() -> &'static Self::Implementation {
+            &GlobalsOnly
+        }
+
+        fn options(self) -> () {
+            ()
+        }
+    }
+
+    struct Example2;
+    globals_only_module!(Example2, |globals| {
+        // Custom globals initialization code here
+        Ok(())
+    });
+
+    #[derive(Clone, Trace, JsLifetime)]
     #[rquickjs::class(frozen)]
     struct Console {
         target: String,
@@ -41,13 +64,10 @@ mod tests {
         }
     }
 
+    #[derive(JsLifetime, Debug)]
     struct ConsoleOptions {
         target: String,
         newline: bool,
-    }
-
-    unsafe impl<'js> UserData<'js> for ConsoleOptions {
-        type Static = ConsoleOptions;
     }
 
     struct ConsoleModule {
@@ -55,62 +75,83 @@ mod tests {
     }
 
     impl ConsoleModule {
-        pub fn new(options: ConsoleOptions) -> Self {
-            Self { options }
+        pub fn new<T: Into<String>>(target: T, newline: bool) -> Self {
+            Self {
+                options: ConsoleOptions {
+                    target: target.into(),
+                    newline,
+                },
+            }
         }
     }
 
-    impl ModuleDefExt for ConsoleModule {
-        const NAME: &'static str = "console";
+    impl ModuleDefExt<ConsoleOptions> for ConsoleModule {
+        type Implementation = ModuleImpl<ConsoleOptions>;
 
-        type Options<'js> = ConsoleOptions;
-
-        fn declare(decl: &Declarations<'_>) -> Result<()> {
-            decl.declare(stringify!(Console))?;
-            Ok(())
+        fn implementation() -> &'static Self::Implementation {
+            &ModuleImpl {
+                declare: |decl| {
+                    decl.declare("default")?;
+                    Ok(())
+                },
+                evaluate: |ctx, exports, options| {
+                    println!("Options in eval? {:?}", options);
+                    exports.export("default", options.target.clone())?;
+                    Ok(())
+                },
+                name: "console",
+            }
         }
 
-        fn evaluate<'js>(
-            options: &Self::Options<'js>,
-            ctx: &Ctx<'js>,
-            exports: &Exports<'js>,
-        ) -> Result<()> {
-            let target = options.target.clone();
-            let newline = options.newline;
-            exports.export(
-                stringify!(Console),
-                Constructor::new_class::<Console, _, _>(ctx.clone(), move || {
-                    Ok::<_, Error>(Console::new(target.clone(), newline))
-                }),
-            )?;
-
-            Ok(())
+        fn options(self) -> ConsoleOptions {
+            self.options
         }
 
-        fn globals<'js>(options: &Self::Options<'js>, globals: &Object<'js>) -> Result<()> {
-            globals.set(
-                "console",
-                Console::new(options.target.clone(), options.newline),
-            )?;
+        fn globals(globals: &Object<'_>, options: &ConsoleOptions) -> Result<()> {
+            println!("Options in globals? {:?}", options);
             Ok(())
-        }
-
-        fn options(self) -> Result<Self::Options<'static>> {
-            Ok(self.options)
         }
     }
-
-    module_def!(ConsoleModule);
 
     #[tokio::test]
     async fn test() {
         let rt = AsyncRuntime::new().unwrap();
-        let ctx = AsyncContext::full(&rt).await.unwrap();
-        // let loader
 
-        // async_with!(ctx => |ctx| {
-        //     func(ctx).await
-        // })
-        // .await;
+        let mut loader = ModuleLoader::builder();
+        loader.add_module(ConsoleModule::new("console", true));
+
+        let (loader, initalizer) = loader.build();
+
+        // let loader = ModuleLoader::default().with_module(
+        //     "console",
+
+        //     .as_module(),
+        // );
+
+        rt.set_loader(BuiltinResolver::default().with_module("console"), loader)
+            .await;
+
+        let ctx = AsyncContext::full(&rt).await.unwrap();
+
+        async_with!(ctx => |ctx| {
+
+            if let Err(err) = initalizer.init(&ctx).catch(&ctx){
+                eprintln!("{:?}", err);
+            }
+
+            let mut opts = EvalOptions::default();
+            opts.global = false;
+
+            if let Err(err) = ctx.eval_with_options::<Value,_>(r#"
+            
+            import console from "console";
+            
+            "#, opts).catch(&ctx){
+                eprintln!("{:?}", err);
+            }
+
+
+        })
+        .await;
     }
 }
