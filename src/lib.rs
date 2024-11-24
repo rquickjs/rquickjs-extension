@@ -1,5 +1,5 @@
-pub use definition::{GlobalsOnly, ModuleDefExt, ModuleImpl};
-pub use loader::{ModuleLoader, ModuleLoaderBuilder};
+pub use self::definition::{GlobalsOnly, ModuleDefExt, ModuleImpl};
+pub use self::loader::{GlobalInitializer, ModuleLoader, ModuleLoaderBuilder, ModuleResolver};
 
 mod definition;
 mod loader;
@@ -10,8 +10,8 @@ mod wrapper;
 mod tests {
 
     use rquickjs::{
-        async_with, class::Trace, context::EvalOptions, loader::BuiltinResolver, AsyncContext,
-        AsyncRuntime, CatchResultExt, JsLifetime, Object, Result, Value,
+        async_with, class::Trace, context::EvalOptions, AsyncContext, AsyncRuntime, CatchResultExt,
+        JsLifetime, Object, Result, Value,
     };
 
     use crate::{
@@ -121,7 +121,7 @@ mod tests {
         let mut loader = ModuleLoader::builder();
         loader.add_module(ConsoleModule::new("console", true));
 
-        let (loader, initalizer) = loader.build();
+        let (loader, resolver, initalizer) = loader.build();
 
         // let loader = ModuleLoader::default().with_module(
         //     "console",
@@ -129,8 +129,7 @@ mod tests {
         //     .as_module(),
         // );
 
-        rt.set_loader(BuiltinResolver::default().with_module("console"), loader)
-            .await;
+        rt.set_loader(resolver, loader).await;
 
         let ctx = AsyncContext::full(&rt).await.unwrap();
 

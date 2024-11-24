@@ -12,9 +12,7 @@ macro_rules! globals_only_module {
                 &GlobalsOnly
             }
 
-            fn options(self) -> () {
-                ()
-            }
+            fn options(self) -> () {}
         }
     };
 }
