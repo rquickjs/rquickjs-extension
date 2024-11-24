@@ -20,12 +20,6 @@ where
     T: ModuleDefExt<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
 {
-    fn as_module(&self) -> GlobalDefWrapper<T, O> {
-        GlobalDefWrapper {
-            _marker: std::marker::PhantomData::<T>,
-            _marker2: std::marker::PhantomData::<O>,
-        }
-    }
 }
 
 impl<T, O> HasModule for GlobalDefWrapper<T, O>

@@ -16,12 +16,11 @@ pub trait HasModule {
     fn is_module() -> bool;
 }
 
-/// Convert a [`ModuleDefExt`] to a [`ModuleDef`]
+/// Semantically convert a [`ModuleDefExt`] to a [`ModuleDef`] and [`HasModule`]
 pub trait AsModule<O, R>
 where
     Self: ModuleDefExt<O>,
     R: ModuleDef + HasModule,
     for<'js> O: JsLifetime<'js>,
 {
-    fn as_module(&self) -> R;
 }

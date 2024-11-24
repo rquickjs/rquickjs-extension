@@ -20,12 +20,12 @@ where
     T: ModuleDefExt<O, Implementation = ModuleImpl<O>>,
     for<'js> O: JsLifetime<'js> + 'static,
 {
-    fn as_module(&self) -> ModuleDefWrapper<T, O> {
-        ModuleDefWrapper {
-            _marker: std::marker::PhantomData::<T>,
-            _marker2: std::marker::PhantomData::<O>,
-        }
-    }
+    // fn as_module(&self) -> ModuleDefWrapper<T, O> {
+    //     ModuleDefWrapper {
+    //         _marker: std::marker::PhantomData::<T>,
+    //         _marker2: std::marker::PhantomData::<O>,
+    //     }
+    // }
 }
 
 impl<T, O> HasModule for ModuleDefWrapper<T, O>
