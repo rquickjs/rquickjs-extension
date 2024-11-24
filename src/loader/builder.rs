@@ -95,8 +95,6 @@ impl ModuleLoaderBuilder {
         R: ModuleDef + HasModule,
         M: AsModule<O, R>,
     {
-        let name = name.unwrap_or(R::name());
-        let m = module.as_module();
         let o = module.options();
 
         // Create a new closure that explicitly captures 'js lifetime
@@ -111,16 +109,12 @@ impl ModuleLoaderBuilder {
         let boxed_globals: GlobalLoadFn = Box::new(globals_fn);
 
         if R::is_module() {
-            self.insert_module(name, m);
+            let name = name.unwrap_or(R::name());
+            self.names.insert(name);
+            self.modules.insert(name, load_module_func::<R>);
         }
 
         self.globals.push(boxed_globals);
-        self
-    }
-
-    fn insert_module<M: ModuleDef>(&mut self, name: &'static str, _module: M) -> &mut Self {
-        self.names.insert(name);
-        self.modules.insert(name, load_module_func::<M>);
         self
     }
 

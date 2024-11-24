@@ -34,7 +34,7 @@ where
     for<'js> O: JsLifetime<'js>,
 {
     fn name() -> &'static str {
-        ""
+        unimplemented!("Global modules do not have a name")
     }
 
     fn is_module() -> bool {
@@ -51,11 +51,11 @@ where
 {
     //unused
     fn declare(_decl: &Declarations) -> Result<()> {
-        Ok(())
+        unimplemented!("Global modules do not declare anything")
     }
 
     //unused
     fn evaluate<'a>(_ctx: &Ctx<'a>, _exports: &Exports<'a>) -> Result<()> {
-        Ok(())
+        unimplemented!("Global modules do not evaluate anything")
     }
 }
