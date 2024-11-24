@@ -52,7 +52,7 @@ impl ModuleLoaderBuilder {
     #[must_use]
     pub fn with_module<O, M, R>(mut self, module: M) -> Self
     where
-        for<'js> O: JsLifetime<'js> + 'static,
+        for<'js> O: JsLifetime<'js> + Send + Sync + 'static,
         R: ModuleDef + ModuleMeta,
         M: IntoModule<O, R>,
     {
@@ -63,7 +63,7 @@ impl ModuleLoaderBuilder {
     #[must_use]
     pub fn with_module_named<O, M, R>(mut self, module: M, name: &'static str) -> Self
     where
-        for<'js> O: JsLifetime<'js> + 'static,
+        for<'js> O: JsLifetime<'js> + Send + Sync + 'static,
         R: ModuleDef + ModuleMeta,
         M: IntoModule<O, R>,
     {
@@ -73,7 +73,7 @@ impl ModuleLoaderBuilder {
 
     pub fn add_module<O, M, R>(&mut self, module: M) -> &mut Self
     where
-        for<'js> O: JsLifetime<'js> + 'static,
+        for<'js> O: JsLifetime<'js> + Send + Sync + 'static,
         R: ModuleDef + ModuleMeta,
         M: IntoModule<O, R>,
     {
@@ -82,7 +82,7 @@ impl ModuleLoaderBuilder {
 
     pub fn add_module_named<O, M, R>(&mut self, module: M, name: &'static str) -> &mut Self
     where
-        for<'js> O: JsLifetime<'js> + 'static,
+        for<'js> O: JsLifetime<'js> + Send + Sync + 'static,
         R: ModuleDef + ModuleMeta,
         M: IntoModule<O, R>,
     {
@@ -91,7 +91,7 @@ impl ModuleLoaderBuilder {
 
     fn process_module<O, M, R>(&mut self, module: M, name: Option<&'static str>) -> &mut Self
     where
-        for<'js> O: JsLifetime<'js> + 'static,
+        for<'js> O: JsLifetime<'js> + Send + Sync + 'static,
         R: ModuleDef + ModuleMeta,
         M: IntoModule<O, R>,
     {

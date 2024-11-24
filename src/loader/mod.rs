@@ -10,7 +10,7 @@ mod builder;
 mod global;
 mod resolver;
 
-type GlobalLoadFn = Box<dyn for<'js> FnOnce(&Ctx<'js>, &Object<'js>) -> Result<()>>;
+type GlobalLoadFn = Box<dyn for<'js> FnOnce(&Ctx<'js>, &Object<'js>) -> Result<()> + Send + Sync>;
 type ModuleLoadFn = for<'js> fn(Ctx<'js>, Vec<u8>) -> Result<Module<'js>>;
 
 /// Loader for Rust modules defined using [`crate::ModuleDefExt`].

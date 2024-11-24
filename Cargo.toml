@@ -14,5 +14,5 @@ edition = "2021"
 rquickjs = { version = "0.8.1", features = ["loader"] }
 
 [dev-dependencies]
-rquickjs = { version = "0.8.1", features = ["futures", "macro"] }
+rquickjs = { version = "0.8.1", features = ["futures", "macro", "parallel"] }
 tokio = { version = "1", features = ["full"] }

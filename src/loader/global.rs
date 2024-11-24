@@ -6,9 +6,6 @@ pub struct GlobalInitializer {
     globals: Vec<GlobalLoadFn>,
 }
 
-unsafe impl Send for GlobalInitializer {}
-unsafe impl Sync for GlobalInitializer {}
-
 impl GlobalInitializer {
     pub(crate) fn new(globals: Vec<GlobalLoadFn>) -> Self {
         Self { globals }
