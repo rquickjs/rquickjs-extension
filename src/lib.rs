@@ -14,10 +14,7 @@ mod tests {
         JsLifetime, Object, Result, Value,
     };
 
-    use crate::{
-        definition::{GlobalsOnly, ModuleImpl},
-        globals_only_module, ModuleLoader,
-    };
+    use crate::{globals_only_module, GlobalsOnly, ModuleImpl, ModuleLoader};
 
     use super::ModuleDefExt;
 
@@ -29,9 +26,7 @@ mod tests {
             &GlobalsOnly
         }
 
-        fn options(self) -> () {
-            ()
-        }
+        fn options(self) {}
     }
 
     struct Example2;

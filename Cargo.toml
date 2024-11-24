@@ -1,8 +1,11 @@
 [package]
-name = "rquickjs-moduledef-ext"
+name = "rquickjs-module"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rquickjs = { version = "*", features = ["full-async", "parallel", "macro"] }
+rquickjs = { version = "0.8.1", features = ["loader"] }
+
+[dev-dependencies]
+rquickjs = { version = "0.8.1", features = ["futures", "macro"] }
 tokio = { version = "1", features = ["full"] }

@@ -10,7 +10,7 @@ use rquickjs::{
 ///
 /// ```
 /// use rquickjs::{Ctx, JsLifetime, Object, Result};
-/// use rquickjs_moduledef_ext::{ModuleDefExt, ModuleImpl};
+/// use rquickjs_module::{ModuleDefExt, ModuleImpl};
 ///
 /// #[derive(JsLifetime, Debug)]
 /// struct MyModuleOptions {

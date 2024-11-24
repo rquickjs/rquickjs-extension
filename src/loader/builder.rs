@@ -12,6 +12,35 @@ fn load_module_func<D: ModuleDef>(ctx: Ctx<'_>, name: Vec<u8>) -> Result<Module<
     Module::declare_def::<D, _>(ctx, name)
 }
 
+/// Builder to create a [`ModuleLoader`], [`ModuleResolver`] and [`GlobalInitializer`]
+///
+/// # Example
+/// ```rust
+/// use rquickjs_module::{ModuleLoader, ModuleDefExt, ModuleImpl};
+///
+/// struct MyModule;
+///
+/// impl ModuleDefExt for MyModule {
+///     type Implementation = ModuleImpl<()>;
+///
+///     fn implementation() -> &'static Self::Implementation {
+///         &ModuleImpl {
+///             declare: |decl| {
+///                 decl.declare("hello")?;
+///                 Ok(())
+///             },
+///             evaluate: |ctx, exports, options| {
+///                 exports.export("hello", "world".to_string())?;
+///                 Ok(())
+///             },
+///             name: "my-module",
+///         }
+///     }
+///
+///     fn options(self) -> () {}
+/// }
+///
+/// ```
 #[derive(Default)]
 pub struct ModuleLoaderBuilder {
     modules: HashMap<&'static str, ModuleLoadFn>,
@@ -20,6 +49,17 @@ pub struct ModuleLoaderBuilder {
 }
 
 impl ModuleLoaderBuilder {
+    #[must_use]
+    pub fn with_module<O, M, R>(mut self, module: M) -> Self
+    where
+        for<'js> O: JsLifetime<'js> + 'static,
+        R: ModuleDef + HasModule,
+        M: AsModule<O, R>,
+    {
+        self.add_module(module);
+        self
+    }
+
     pub fn add_module<O, M, R>(&mut self, module: M) -> &mut Self
     where
         for<'js> O: JsLifetime<'js> + 'static,
