@@ -6,7 +6,7 @@ use rquickjs::{
 };
 
 use super::{GlobalInitializer, GlobalLoadFn, ModuleLoadFn, ModuleLoader, ModuleResolver};
-use crate::wrapper::{AsModule, HasModule};
+use crate::wrapper::{IntoModule, ModuleMeta};
 
 fn load_module_func<D: ModuleDef>(ctx: Ctx<'_>, name: Vec<u8>) -> Result<Module<'_>> {
     Module::declare_def::<D, _>(ctx, name)
@@ -53,8 +53,8 @@ impl ModuleLoaderBuilder {
     pub fn with_module<O, M, R>(mut self, module: M) -> Self
     where
         for<'js> O: JsLifetime<'js> + 'static,
-        R: ModuleDef + HasModule,
-        M: AsModule<O, R>,
+        R: ModuleDef + ModuleMeta,
+        M: IntoModule<O, R>,
     {
         self.process_module(module, None);
         self
@@ -64,8 +64,8 @@ impl ModuleLoaderBuilder {
     pub fn with_module_named<O, M, R>(mut self, module: M, name: &'static str) -> Self
     where
         for<'js> O: JsLifetime<'js> + 'static,
-        R: ModuleDef + HasModule,
-        M: AsModule<O, R>,
+        R: ModuleDef + ModuleMeta,
+        M: IntoModule<O, R>,
     {
         self.process_module(module, Some(name));
         self
@@ -74,8 +74,8 @@ impl ModuleLoaderBuilder {
     pub fn add_module<O, M, R>(&mut self, module: M) -> &mut Self
     where
         for<'js> O: JsLifetime<'js> + 'static,
-        R: ModuleDef + HasModule,
-        M: AsModule<O, R>,
+        R: ModuleDef + ModuleMeta,
+        M: IntoModule<O, R>,
     {
         self.process_module(module, None)
     }
@@ -83,8 +83,8 @@ impl ModuleLoaderBuilder {
     pub fn add_module_named<O, M, R>(&mut self, module: M, name: &'static str) -> &mut Self
     where
         for<'js> O: JsLifetime<'js> + 'static,
-        R: ModuleDef + HasModule,
-        M: AsModule<O, R>,
+        R: ModuleDef + ModuleMeta,
+        M: IntoModule<O, R>,
     {
         self.process_module(module, Some(name))
     }
@@ -92,8 +92,8 @@ impl ModuleLoaderBuilder {
     fn process_module<O, M, R>(&mut self, module: M, name: Option<&'static str>) -> &mut Self
     where
         for<'js> O: JsLifetime<'js> + 'static,
-        R: ModuleDef + HasModule,
-        M: AsModule<O, R>,
+        R: ModuleDef + ModuleMeta,
+        M: IntoModule<O, R>,
     {
         let o = module.options();
 

@@ -11,16 +11,16 @@ mod module;
 /// converted it from a [`ModuleDefExt`] to a [`ModuleDef`].
 ///
 /// This is necessary for the loader to work.
-pub trait HasModule {
+pub trait ModuleMeta {
     fn name() -> &'static str;
     fn is_module() -> bool;
 }
 
-/// Semantically convert a [`ModuleDefExt`] to a [`ModuleDef`] and [`HasModule`]
-pub trait AsModule<O, R>
+/// Semantically convert a [`ModuleDefExt`] to a [`ModuleDef`] and [`ModuleMeta`]
+pub trait IntoModule<O, R>
 where
     Self: ModuleDefExt<O>,
-    R: ModuleDef + HasModule,
+    R: ModuleDef + ModuleMeta,
     for<'js> O: JsLifetime<'js>,
 {
 }

@@ -3,7 +3,7 @@ use rquickjs::{
     Ctx, JsLifetime, Result,
 };
 
-use super::{AsModule, HasModule};
+use super::{IntoModule, ModuleMeta};
 use crate::{ModuleDefExt, ModuleImpl};
 
 pub(crate) struct ModuleDefWrapper<T, O>
@@ -15,20 +15,14 @@ where
     _marker2: std::marker::PhantomData<O>,
 }
 
-impl<T, O> AsModule<O, ModuleDefWrapper<T, O>> for T
+impl<T, O> IntoModule<O, ModuleDefWrapper<T, O>> for T
 where
     T: ModuleDefExt<O, Implementation = ModuleImpl<O>>,
     for<'js> O: JsLifetime<'js> + 'static,
 {
-    // fn as_module(&self) -> ModuleDefWrapper<T, O> {
-    //     ModuleDefWrapper {
-    //         _marker: std::marker::PhantomData::<T>,
-    //         _marker2: std::marker::PhantomData::<O>,
-    //     }
-    // }
 }
 
-impl<T, O> HasModule for ModuleDefWrapper<T, O>
+impl<T, O> ModuleMeta for ModuleDefWrapper<T, O>
 where
     T: ModuleDefExt<O, Implementation = ModuleImpl<O>>,
     for<'c> O: JsLifetime<'c> + 'static,

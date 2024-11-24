@@ -3,7 +3,7 @@ use rquickjs::{
     Ctx, JsLifetime, Result,
 };
 
-use super::{AsModule, HasModule};
+use super::{IntoModule, ModuleMeta};
 use crate::{GlobalsOnly, ModuleDefExt};
 
 pub struct GlobalDefWrapper<T, O>
@@ -15,14 +15,14 @@ where
     _marker2: std::marker::PhantomData<O>,
 }
 
-impl<T, O> AsModule<O, GlobalDefWrapper<T, O>> for T
+impl<T, O> IntoModule<O, GlobalDefWrapper<T, O>> for T
 where
     T: ModuleDefExt<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
 {
 }
 
-impl<T, O> HasModule for GlobalDefWrapper<T, O>
+impl<T, O> ModuleMeta for GlobalDefWrapper<T, O>
 where
     T: ModuleDefExt<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
