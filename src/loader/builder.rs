@@ -56,7 +56,18 @@ impl ModuleLoaderBuilder {
         R: ModuleDef + HasModule,
         M: AsModule<O, R>,
     {
-        self.add_module(module);
+        self.process_module(module, None);
+        self
+    }
+
+    #[must_use]
+    pub fn with_module_named<O, M, R>(mut self, module: M, name: &'static str) -> Self
+    where
+        for<'js> O: JsLifetime<'js> + 'static,
+        R: ModuleDef + HasModule,
+        M: AsModule<O, R>,
+    {
+        self.process_module(module, Some(name));
         self
     }
 
@@ -66,7 +77,25 @@ impl ModuleLoaderBuilder {
         R: ModuleDef + HasModule,
         M: AsModule<O, R>,
     {
-        let name = R::name();
+        self.process_module(module, None)
+    }
+
+    pub fn add_module_named<O, M, R>(&mut self, module: M, name: &'static str) -> &mut Self
+    where
+        for<'js> O: JsLifetime<'js> + 'static,
+        R: ModuleDef + HasModule,
+        M: AsModule<O, R>,
+    {
+        self.process_module(module, Some(name))
+    }
+
+    fn process_module<O, M, R>(&mut self, module: M, name: Option<&'static str>) -> &mut Self
+    where
+        for<'js> O: JsLifetime<'js> + 'static,
+        R: ModuleDef + HasModule,
+        M: AsModule<O, R>,
+    {
+        let name = name.unwrap_or(R::name());
         let m = module.as_module();
         let o = module.options();
 
