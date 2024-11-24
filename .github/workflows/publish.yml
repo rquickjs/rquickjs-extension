@@ -1,0 +1,24 @@
+name: Publish
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  publish:
+    if: github.repository == 'rquickjs/rquickjs-module'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@315e265cd78dad1e1dcf3a5074f6d6c47029d5aa
+        with:
+          toolchain: stable
+
+      - name: Publish crates
+        uses: katyo/publish-crates@c9f6fdb4620c98d491ffaa6e563cb87388bd6ece
+        with:
+          registry-token: ${{ secrets.CRATES_TOKEN }}
+          no-verify: true
