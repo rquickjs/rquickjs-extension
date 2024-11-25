@@ -5,6 +5,8 @@ use rquickjs::{
     Ctx, Result,
 };
 
+/// Rquickjs [`Resolver`](rquickjs::loader::Resolver) for modules
+/// defined using [`ModuleDefExt`](crate::ModuleDefExt).
 pub struct ModuleResolver {
     inner: BuiltinResolver,
 }

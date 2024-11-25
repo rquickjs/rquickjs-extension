@@ -2,6 +2,7 @@ use rquickjs::{Ctx, Result};
 
 use super::GlobalLoadFn;
 
+/// Global initializer that MUST be called before any user code is run.
 pub struct GlobalInitializer {
     globals: Vec<GlobalLoadFn>,
 }

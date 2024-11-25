@@ -13,7 +13,8 @@ mod resolver;
 type GlobalLoadFn = Box<dyn for<'js> FnOnce(&Ctx<'js>, &Object<'js>) -> Result<()> + Send + Sync>;
 type ModuleLoadFn = for<'js> fn(Ctx<'js>, Vec<u8>) -> Result<Module<'js>>;
 
-/// Loader for Rust modules defined using [`crate::ModuleDefExt`].
+/// Rquickjs [`Loader`](rquickjs::loader::Loader) for Rust modules
+/// defined using [`ModuleDefExt`](crate::ModuleDefExt).
 ///
 /// See [`ModuleLoaderBuilder`] for usage.
 pub struct ModuleLoader {
