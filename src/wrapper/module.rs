@@ -6,7 +6,7 @@ use rquickjs::{
 use super::{IntoModule, ModuleMeta};
 use crate::{ModuleDefExt, ModuleImpl};
 
-pub(crate) struct ModuleDefWrapper<T, O>
+pub struct ModuleDefWrapper<T, O>
 where
     T: ModuleDefExt<O, Implementation = ModuleImpl<O>>,
     for<'js> O: JsLifetime<'js>,
