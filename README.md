@@ -89,11 +89,16 @@ impl ModuleDefExt<MyModuleOptions> for MyModule {
 
     fn globals(globals: &Object<'_>, options: &MyModuleOptions) -> Result<()> {
         // Set your globals here
-        globals.set("user", options.user.clone())?;
+        globals.set("global_user", options.user.clone())?;
         Ok(())
     }
 }
 ```
+
+At runtime, this module results in:
+
+- A global `global_user` variable
+- An importable module `import { user } from "my-module"`
 
 ### Globals only
 
@@ -129,7 +134,10 @@ use rquickjs_module::globals_only_module;
 
 struct MyModule;
 globals_only_module!(MyModule, |globals| {
-    // Custom globals initialization code here
+    // Set your globals here
+    globals.set("hello", "world".to_string())?;
     Ok(())
 });
 ```
+
+Both result in a global variable named `hello` begin available at runtime.
