@@ -97,7 +97,7 @@ impl ModuleDefExt<MyModuleOptions> for MyModule {
 
 At runtime, this module results in:
 
-- A global `global_user` variable
+- A global variable named `global_user`
 - An importable module `import { user } from "my-module"`
 
 ### Globals only
@@ -140,4 +140,4 @@ globals_only_module!(MyModule, |globals| {
 });
 ```
 
-Both result in a global variable named `hello` begin available at runtime.
+At runtime, both result in a global variable named `hello`.
