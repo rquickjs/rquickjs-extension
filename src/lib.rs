@@ -14,30 +14,3 @@ mod definition;
 mod loader;
 mod macros;
 mod wrapper;
-
-#[cfg(test)]
-mod tests {
-    use rquickjs::{
-        async_with, class::Trace, context::EvalOptions, AsyncContext, AsyncRuntime, CatchResultExt,
-        JsLifetime, Object, Result, Value,
-    };
-
-    use super::*;
-
-    struct Example;
-    impl ModuleDefExt for Example {
-        type Implementation = GlobalsOnly;
-
-        fn implementation() -> &'static Self::Implementation {
-            &GlobalsOnly
-        }
-
-        fn options(self) {}
-    }
-
-    struct Example2;
-    globals_only_module!(Example2, |globals| {
-        // Custom globals initialization code here
-        Ok(())
-    });
-}
