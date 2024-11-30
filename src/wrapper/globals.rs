@@ -4,11 +4,11 @@ use rquickjs::{
 };
 
 use super::{IntoModule, ModuleMeta};
-use crate::{GlobalsOnly, ModuleDefExt};
+use crate::{GlobalsOnly, Extension};
 
 pub struct GlobalDefWrapper<T, O>
 where
-    T: ModuleDefExt<O, Implementation = GlobalsOnly>,
+    T: Extension<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
 {
     _marker: std::marker::PhantomData<T>,
@@ -17,14 +17,14 @@ where
 
 impl<T, O> IntoModule<O, GlobalDefWrapper<T, O>> for T
 where
-    T: ModuleDefExt<O, Implementation = GlobalsOnly>,
+    T: Extension<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
 {
 }
 
 impl<T, O> ModuleMeta for GlobalDefWrapper<T, O>
 where
-    T: ModuleDefExt<O, Implementation = GlobalsOnly>,
+    T: Extension<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
 {
     fn name() -> &'static str {
@@ -40,7 +40,7 @@ where
 
 impl<T, O> ModuleDef for GlobalDefWrapper<T, O>
 where
-    T: ModuleDefExt<O, Implementation = GlobalsOnly>,
+    T: Extension<O, Implementation = GlobalsOnly>,
     for<'js> O: JsLifetime<'js>,
 {
     //unused

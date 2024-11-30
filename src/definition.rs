@@ -58,7 +58,7 @@ use rquickjs::{
 ///     }
 /// }
 /// ```
-pub trait ModuleDefExt<O = ()> {
+pub trait Extension<O = ()> {
     type Implementation: ModuleImplementationType<O>;
 
     fn globals(_globals: &Object<'_>, _options: &O) -> Result<()> {

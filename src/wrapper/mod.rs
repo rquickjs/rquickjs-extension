@@ -1,6 +1,6 @@
 use rquickjs::{module::ModuleDef, JsLifetime};
 
-use crate::ModuleDefExt;
+use crate::Extension;
 
 mod globals;
 mod module;
@@ -19,7 +19,7 @@ pub trait ModuleMeta {
 /// Semantically convert a [`ModuleDefExt`] to a [`ModuleDef`] and [`ModuleMeta`]
 pub trait IntoModule<O, R>
 where
-    Self: ModuleDefExt<O>,
+    Self: Extension<O>,
     R: ModuleDef + ModuleMeta,
     for<'js> O: JsLifetime<'js>,
 {

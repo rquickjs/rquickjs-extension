@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! globals_only_module {
     ($name:ident, |$globals:ident| { $($t:tt)* }) => {
-        impl ModuleDefExt for $name {
+        impl Extension for $name {
             type Implementation = GlobalsOnly;
 
             fn globals(globals: &Object<'_>, _options: &()) -> Result<()> {
