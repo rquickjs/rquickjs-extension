@@ -4,7 +4,7 @@ use rquickjs::{
 };
 
 use super::{IntoModule, ModuleMeta};
-use crate::{GlobalsOnly, Extension};
+use crate::{Extension, GlobalsOnly};
 
 pub struct GlobalDefWrapper<T, O>
 where
