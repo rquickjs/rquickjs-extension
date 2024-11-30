@@ -7,11 +7,11 @@ use self::common::{Printer, PrinterOptions};
 
 mod common;
 
-struct PrinterModule {
+struct PrinterExtension {
     options: PrinterOptions,
 }
 
-impl PrinterModule {
+impl PrinterExtension {
     pub fn new<T: Into<String>>(target: T) -> Self {
         Self {
             options: PrinterOptions {
@@ -21,7 +21,7 @@ impl PrinterModule {
     }
 }
 
-impl Extension<PrinterOptions> for PrinterModule {
+impl Extension<PrinterOptions> for PrinterExtension {
     type Implementation = ModuleImpl<PrinterOptions>;
 
     fn implementation() -> &'static Self::Implementation {
@@ -49,11 +49,11 @@ impl Extension<PrinterOptions> for PrinterModule {
 }
 
 #[tokio::test]
-async fn test_module() {
+async fn test_extension() {
     let rt = AsyncRuntime::new().unwrap();
 
     let (loader, resolver, initalizer) = ExtensionBuilder::new()
-        .with_extension(PrinterModule::new("john"))
+        .with_extension(PrinterExtension::new("john"))
         .build();
 
     rt.set_loader(resolver, loader).await;
@@ -77,11 +77,11 @@ async fn test_module() {
 }
 
 #[tokio::test]
-async fn test_module_named() {
+async fn test_extension_named() {
     let rt = AsyncRuntime::new().unwrap();
 
     let (loader, resolver, initalizer) = ExtensionBuilder::new()
-        .with_extension_named(PrinterModule::new("arnold"), "custom_printer")
+        .with_extension_named(PrinterExtension::new("arnold"), "custom_printer")
         .build();
 
     rt.set_loader(resolver, loader).await;
@@ -105,11 +105,11 @@ async fn test_module_named() {
 }
 
 #[tokio::test]
-async fn test_module_global() {
+async fn test_extension_global() {
     let rt = AsyncRuntime::new().unwrap();
 
     let (loader, resolver, initalizer) = ExtensionBuilder::new()
-        .with_extension(PrinterModule::new("david"))
+        .with_extension(PrinterExtension::new("david"))
         .build();
 
     rt.set_loader(resolver, loader).await;

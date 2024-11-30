@@ -10,7 +10,7 @@ mod module;
 /// We use this trait to still access metadata once we have
 /// converted it from an [`Extension`] to a [`ModuleDef`].
 ///
-/// This is necessary for the loader to work.
+/// This is necessary for the [`ExtensionBuilder`](crate::ExtensionBuilder) to work.
 pub trait ModuleMeta {
     fn name() -> &'static str;
     fn is_module() -> bool;

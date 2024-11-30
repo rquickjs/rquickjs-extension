@@ -26,7 +26,7 @@ fn load_module_func<D: ModuleDef>(ctx: Ctx<'_>, name: Vec<u8>) -> Result<Module<
 ///
 /// # Example
 /// ```rust
-/// use rquickjs_module::{ModuleLoader, ModuleDefExt, ModuleImpl};
+/// use rquickjs_extension::{Extension, ModuleImpl};
 ///
 /// struct MyExtension;
 ///

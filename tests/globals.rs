@@ -1,15 +1,15 @@
 use rquickjs::{async_with, AsyncContext, AsyncRuntime, CatchResultExt, Object, Result};
-use rquickjs_extension::{globals_only_module, Extension, ExtensionBuilder, GlobalsOnly};
+use rquickjs_extension::{globals_only, Extension, ExtensionBuilder, GlobalsOnly};
 
 use self::common::{Printer, PrinterOptions};
 
 mod common;
 
-struct PrinterModule {
+struct PrinterExtension {
     options: PrinterOptions,
 }
 
-impl PrinterModule {
+impl PrinterExtension {
     pub fn new<T: Into<String>>(target: T) -> Self {
         Self {
             options: PrinterOptions {
@@ -19,7 +19,7 @@ impl PrinterModule {
     }
 }
 
-impl Extension<PrinterOptions> for PrinterModule {
+impl Extension<PrinterOptions> for PrinterExtension {
     type Implementation = GlobalsOnly;
 
     fn implementation() -> &'static Self::Implementation {
@@ -36,8 +36,8 @@ impl Extension<PrinterOptions> for PrinterModule {
     }
 }
 
-struct PrinterModule2;
-globals_only_module!(PrinterModule2, |globals| {
+struct PrinterExtension2;
+globals_only!(PrinterExtension2, |globals| {
     globals.set("global_printer", Printer::new("emile".to_string()))?;
     Ok(())
 });
@@ -47,7 +47,7 @@ async fn test_global() {
     let rt = AsyncRuntime::new().unwrap();
 
     let (loader, resolver, initalizer) = ExtensionBuilder::new()
-        .with_extension(PrinterModule::new("world"))
+        .with_extension(PrinterExtension::new("world"))
         .build();
 
     rt.set_loader(resolver, loader).await;

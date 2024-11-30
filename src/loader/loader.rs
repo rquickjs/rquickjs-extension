@@ -4,10 +4,8 @@ use rquickjs::{loader::Loader, Ctx, Error, Module, Result};
 
 use super::ModuleLoadFn;
 
-/// Rquickjs [`Loader`](rquickjs::loader::Loader) for Rust modules
-/// defined using [`ModuleDefExt`](crate::ModuleDefExt).
-///
-/// See [`ModuleLoaderBuilder`] for usage.
+/// Rquickjs [`Loader`](rquickjs::loader::Loader) for modules
+/// defined using [`Extension`](crate::Extension).
 pub struct ModuleLoader {
     modules: HashMap<&'static str, ModuleLoadFn>,
 }

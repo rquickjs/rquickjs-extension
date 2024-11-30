@@ -1,6 +1,6 @@
 [package]
 name = "rquickjs-extension"
-repository = "https://github.com/rquickjs/rquickjs-module"
+repository = "https://github.com/rquickjs/rquickjs-extension"
 description = "An extension system for rquickjs"
 license = "MIT"
 authors = [

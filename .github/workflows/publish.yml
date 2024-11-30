@@ -6,7 +6,7 @@ on:
 
 jobs:
   publish:
-    if: github.repository == 'rquickjs/rquickjs-module'
+    if: github.repository == 'rquickjs/rquickjs-extension'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

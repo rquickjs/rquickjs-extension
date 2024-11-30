@@ -3,8 +3,7 @@ use rquickjs::{
     Ctx, Object, Result,
 };
 
-/// A trait for defining Javascript module and globals in Rust
-/// with options.
+/// A trait for defining an extension with options.
 ///
 /// # Example
 ///
@@ -59,7 +58,7 @@ use rquickjs::{
 /// }
 /// ```
 pub trait Extension<O = ()> {
-    type Implementation: ModuleImplementationType<O>;
+    type Implementation: ExtensionType<O>;
 
     fn globals(_globals: &Object<'_>, _options: &O) -> Result<()> {
         Ok(())
@@ -71,11 +70,11 @@ pub trait Extension<O = ()> {
 }
 
 /// Marker trait for implementation types
-pub trait ModuleImplementationType<T> {}
+pub trait ExtensionType<T> {}
 
 /// Implementation type when you only need to define globals
 pub struct GlobalsOnly;
-impl<T> ModuleImplementationType<T> for GlobalsOnly {}
+impl<T> ExtensionType<T> for GlobalsOnly {}
 
 /// Implementation type when you need to define a module and
 /// optionally globals.
@@ -84,4 +83,4 @@ pub struct ModuleImpl<O = ()> {
     pub evaluate: for<'js> fn(&Ctx<'js>, &Exports<'js>, &O) -> Result<()>,
     pub name: &'static str,
 }
-impl<T> ModuleImplementationType<T> for ModuleImpl<T> {}
+impl<T> ExtensionType<T> for ModuleImpl<T> {}

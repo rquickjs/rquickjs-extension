@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! globals_only_module {
+macro_rules! globals_only {
     ($name:ident, |$globals:ident| { $($t:tt)* }) => {
         impl Extension for $name {
             type Implementation = GlobalsOnly;
