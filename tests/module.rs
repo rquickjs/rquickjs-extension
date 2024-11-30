@@ -1,7 +1,7 @@
 use rquickjs::{
     async_with, AsyncContext, AsyncRuntime, CatchResultExt, Function, Module, Object, Result,
 };
-use rquickjs_module::{ModuleDefExt, ModuleImpl, ModuleLoader};
+use rquickjs_extension::{Extension, ModuleImpl, ModuleLoader};
 
 use self::common::{Printer, PrinterOptions};
 
@@ -21,7 +21,7 @@ impl PrinterModule {
     }
 }
 
-impl ModuleDefExt<PrinterOptions> for PrinterModule {
+impl Extension<PrinterOptions> for PrinterModule {
     type Implementation = ModuleImpl<PrinterOptions>;
 
     fn implementation() -> &'static Self::Implementation {

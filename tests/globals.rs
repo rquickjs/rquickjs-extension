@@ -1,5 +1,5 @@
 use rquickjs::{async_with, AsyncContext, AsyncRuntime, CatchResultExt, Object, Result};
-use rquickjs_module::{globals_only_module, GlobalsOnly, ModuleDefExt, ModuleLoader};
+use rquickjs_extension::{globals_only_module, GlobalsOnly, Extension, ModuleLoader};
 
 use self::common::{Printer, PrinterOptions};
 
@@ -19,7 +19,7 @@ impl PrinterModule {
     }
 }
 
-impl ModuleDefExt<PrinterOptions> for PrinterModule {
+impl Extension<PrinterOptions> for PrinterModule {
     type Implementation = GlobalsOnly;
 
     fn implementation() -> &'static Self::Implementation {
