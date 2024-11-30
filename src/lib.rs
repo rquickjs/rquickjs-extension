@@ -8,7 +8,7 @@
 //! that would allow it to have options as input and set global.
 
 pub use self::definition::{Extension, GlobalsOnly, ModuleImpl};
-pub use self::loader::{GlobalInitializer, ModuleLoader, ModuleLoaderBuilder, ModuleResolver};
+pub use self::loader::{ExtensionBuilder, GlobalInitializer, ModuleLoader, ModuleResolver};
 
 mod definition;
 mod loader;

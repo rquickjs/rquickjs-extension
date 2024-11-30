@@ -10,29 +10,29 @@ use rquickjs::{
 ///
 /// ```
 /// use rquickjs::{Ctx, JsLifetime, Object, Result};
-/// use rquickjs_module::{ModuleDefExt, ModuleImpl};
+/// use rquickjs_extension::{Extension, ModuleImpl};
 ///
 /// #[derive(JsLifetime, Debug)]
-/// struct MyModuleOptions {
+/// struct MyExtensionOptions {
 ///     user: String,
 /// }
 ///
-/// struct MyModule {
-///     options: MyModuleOptions,
+/// struct MyExtension {
+///     options: MyExtensionOptions,
 /// }
 ///
-/// impl MyModule {
+/// impl MyExtension {
 ///     pub fn new<T: Into<String>>(user: T) -> Self {
 ///         Self {
-///             options: MyModuleOptions {
+///             options: MyExtensionOptions {
 ///                 user: user.into(),
 ///             },
 ///         }
 ///     }
 /// }
 ///
-/// impl ModuleDefExt<MyModuleOptions> for MyModule {
-///     type Implementation = ModuleImpl<MyModuleOptions>;
+/// impl Extension<MyExtensionOptions> for MyExtension {
+///     type Implementation = ModuleImpl<MyExtensionOptions>;
 ///
 ///     fn implementation() -> &'static Self::Implementation {
 ///         &ModuleImpl {
@@ -48,11 +48,11 @@ use rquickjs::{
 ///         }
 ///     }
 ///
-///     fn options(self) -> MyModuleOptions {
+///     fn options(self) -> MyExtensionOptions {
 ///         self.options
 ///     }
 ///
-///     fn globals(globals: &Object<'_>, options: &MyModuleOptions) -> Result<()> {
+///     fn globals(globals: &Object<'_>, options: &MyExtensionOptions) -> Result<()> {
 ///         globals.set("user", options.user.clone())?;
 ///         Ok(())
 ///     }

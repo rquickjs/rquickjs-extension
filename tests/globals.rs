@@ -1,5 +1,5 @@
 use rquickjs::{async_with, AsyncContext, AsyncRuntime, CatchResultExt, Object, Result};
-use rquickjs_extension::{globals_only_module, GlobalsOnly, Extension, ModuleLoader};
+use rquickjs_extension::{globals_only_module, Extension, ExtensionBuilder, GlobalsOnly};
 
 use self::common::{Printer, PrinterOptions};
 
@@ -46,8 +46,8 @@ globals_only_module!(PrinterModule2, |globals| {
 async fn test_global() {
     let rt = AsyncRuntime::new().unwrap();
 
-    let (loader, resolver, initalizer) = ModuleLoader::builder()
-        .with_module(PrinterModule::new("world"))
+    let (loader, resolver, initalizer) = ExtensionBuilder::new()
+        .with_extension(PrinterModule::new("world"))
         .build();
 
     rt.set_loader(resolver, loader).await;

@@ -1,7 +1,7 @@
 use rquickjs::{
     async_with, AsyncContext, AsyncRuntime, CatchResultExt, Function, Module, Object, Result,
 };
-use rquickjs_extension::{Extension, ModuleImpl, ModuleLoader};
+use rquickjs_extension::{Extension, ExtensionBuilder, ModuleImpl};
 
 use self::common::{Printer, PrinterOptions};
 
@@ -52,8 +52,8 @@ impl Extension<PrinterOptions> for PrinterModule {
 async fn test_module() {
     let rt = AsyncRuntime::new().unwrap();
 
-    let (loader, resolver, initalizer) = ModuleLoader::builder()
-        .with_module(PrinterModule::new("john"))
+    let (loader, resolver, initalizer) = ExtensionBuilder::new()
+        .with_extension(PrinterModule::new("john"))
         .build();
 
     rt.set_loader(resolver, loader).await;
@@ -80,8 +80,8 @@ async fn test_module() {
 async fn test_module_named() {
     let rt = AsyncRuntime::new().unwrap();
 
-    let (loader, resolver, initalizer) = ModuleLoader::builder()
-        .with_module_named(PrinterModule::new("arnold"), "custom_printer")
+    let (loader, resolver, initalizer) = ExtensionBuilder::new()
+        .with_extension_named(PrinterModule::new("arnold"), "custom_printer")
         .build();
 
     rt.set_loader(resolver, loader).await;
@@ -108,8 +108,8 @@ async fn test_module_named() {
 async fn test_module_global() {
     let rt = AsyncRuntime::new().unwrap();
 
-    let (loader, resolver, initalizer) = ModuleLoader::builder()
-        .with_module(PrinterModule::new("david"))
+    let (loader, resolver, initalizer) = ExtensionBuilder::new()
+        .with_extension(PrinterModule::new("david"))
         .build();
 
     rt.set_loader(resolver, loader).await;
