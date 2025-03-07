@@ -7,12 +7,12 @@ authors = [
   "Emile Fugulin <code@efugulin.com>",
   "Richard Davison <richard.davison1@gmail.com>",
 ]
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 
 [dependencies]
-rquickjs = { version = "0.8.1", features = ["loader"] }
+rquickjs = { version = "0.9", features = ["loader"] }
 
 [dev-dependencies]
-rquickjs = { version = "0.8.1", features = ["futures", "macro", "parallel"] }
+rquickjs = { version = "0.9", features = ["futures", "macro", "parallel"] }
 tokio = { version = "1", features = ["full"] }
